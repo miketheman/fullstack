@@ -62,7 +62,7 @@ end
 # Build our config and connection details
 mongo_hosts = []
 replset_nodes = search("node", "role:mongodb-replset-member").each do |member|
-    mongo_hosts << "#{member.name}:27017"
+    mongo_hosts << "#{member['fqdn']}:27017"
 end
 Chef::Log.debug("mongo_hosts is now: #{mongo_hosts.inspect}")
 

@@ -36,7 +36,7 @@ import random
 words = [x.strip() for x in file('/usr/share/dict/words') if x.strip()]
 with file('#{approot}/urls.txt', 'w') as outfile:
     for word in random.sample(words, 50000):
-        outfile.write("http://#{lb[0].ec2.public_hostname}/%s\\n" % word)  
+        outfile.write("http://#{lb[0].ec2.public_hostname}/insert/%s\\n" % word)
   EOH
   not_if do
     File.exists?("#{approot}/urls.txt")
