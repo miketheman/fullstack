@@ -38,6 +38,7 @@ Customizations
 Nothing is perfect building blocks, but I tried to stay as close to the original as possible.
 
 * `bluepill` cookbook: added amazon linux platform
+* `apache2` cookbook: added a template for default system config and attribute for prefork mode
 
 
 Prep work
@@ -70,3 +71,31 @@ A Users Databag item must be placed in `data_bags/users/<username>.json`. An exa
     TODO: insert example here
     
 
+Some cool tricks
+================
+
+Munin Monitoring web console:
+
+    open http://`knife search node 'role:monitoring' -a ec2.public_hostname |grep ec2.public_hostname | cut -f3 -d" "`
+
+HAProxy web console:
+
+    open http://`knife search node 'role:load_balancer' -a ec2.public_hostname |grep ec2.public_hostname | cut -f3 -d" "`:22002/
+
+Do something on all nodes:
+
+    knife ssh '*:*' -a ec2.public_hostname 'sudo /sbin/service munin-node restart'
+    
+Cleanup
+=======
+Spiceweasel, in reverse:
+
+    spiceweasel -d coolspice.yml | bash
+    knife client bulk delete i-.*
+
+That's all, folks!
+
+Credits
+=======
+* [Mike Fiedler](https://github.com/miketheman)
+* [Daniel Crosta](https://github.com/dcrosta)
