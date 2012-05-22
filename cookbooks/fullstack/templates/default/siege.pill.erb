@@ -1,0 +1,8 @@
+# Bluepill startup siege service
+Bluepill.application("siege", :log_file => "<%= @approot %>/siege-bluepill.log") do |app|
+  app.process("siege") do |process|
+    process.pid_file = "/var/run/siege.pid"
+    process.start_command = "/usr/bin/siege --concurrent=<%= node['siege']['concurrent'] %> --internet --benchmark --file=<%= @approot %>/urls.txt --log=<%= @approot %>/cstest.log"
+    process.daemonize = true
+  end
+end

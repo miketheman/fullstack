@@ -1,0 +1,13 @@
+# Change working directory so relative paths (and template lookup) work again
+import os
+import sys
+
+sys.path.append('<%= @approot %>/')
+
+os.chdir(os.path.dirname(__file__))
+
+import bottle
+# ... build or import your bottle application here ...
+import webapp
+application = bottle.default_app()
+# Do NOT use bottle.run() with mod_wsgi

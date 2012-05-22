@@ -1,0 +1,49 @@
+# This file managed by Chef. Changes will be overwritten.
+
+# Where to store the data.
+dbpath=<%= @dbpath %>
+
+# Where to log
+logpath=<%= @logpath %>
+logappend=true
+
+# Port the server process listens on.
+port=<%= @port %>
+
+# Controls write-ahead journaling
+<% if @journal %>
+journal=true
+<% else -%>
+nojournal=true
+<% end -%>
+
+# Turn on/off security. Off is currently the default
+<% if @auth or @keyfile %>
+auth=true
+<% if @keyfile %>
+keyfile=<%= @keyfile %>
+<% end -%>
+<% else -%>
+noauth=true
+<% end -%>
+
+<% if @nohttpinterface %>
+# Disable the HTTP interface
+nohttpinterface=true
+<% elsif @rest -%>
+# Enable the HTTP interface (Defaults to localhost:28017).
+rest=true
+<% end -%>
+
+<% if @replicaset %>
+# in replica set configuration, specify the name of the replica set
+replSet=<%= @replicaset %>
+<% end -%>
+
+<% if @fork %>
+fork=true
+<% end -%>
+
+<% if @quiet %>
+quiet=true
+<% end -%>

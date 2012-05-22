@@ -1,0 +1,31 @@
+<VirtualHost *:8080>
+    ServerName <%= @params[:server_name] %>
+    DocumentRoot <%= @params[:docroot] %>
+
+    WSGIDaemonProcess <%= @application_name %>
+    WSGIScriptAlias / <%= @params[:docroot] %>/webapp.wsgi
+
+    <Directory <%= @params[:docroot] %>>
+        WSGIProcessGroup <%= @application_name %>
+        WSGIApplicationGroup %{GLOBAL}
+        Order deny,allow
+        Allow from all
+    </Directory>
+
+    <Location /server-status>
+        SetHandler server-status
+
+        Order Deny,Allow
+        Deny from all
+        Allow from 127.0.0.1
+    </Location>
+
+    LogLevel info
+    ErrorLog <%= node['apache']['log_dir'] %>/<%= @application_name %>-error.log
+    CustomLog <%= node['apache']['log_dir'] %>/<%= @application_name %>-access.log combined
+
+    RewriteEngine On
+    RewriteLog <%= node['apache']['log_dir'] %>/<%= @application_name %>-rewrite.log
+    RewriteLogLevel 0
+
+</VirtualHost>
