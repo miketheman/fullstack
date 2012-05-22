@@ -10,3 +10,15 @@
 data_bags/users/miketheman.json
 
 tmp/
+
+# Ignoring sourced cookbooks:
+cookbooks/apt/
+cookbooks/build-essential/
+cookbooks/chef-client/
+cookbooks/haproxy/
+cookbooks/munin/
+cookbooks/ntp/
+cookbooks/python/
+cookbooks/sudo/
+cookbooks/users/
+cookbooks/yum/
