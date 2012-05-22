@@ -29,11 +29,11 @@ ruby_block "configure-replica-set" do
     # Retry 5 times, as we believe that there should
     # be a mongod accepting connections on localhost
     conn = nil
-    5.times do |try|
+    10.times do |try|
       begin
         conn = Mongo::Connection.new(
           "localhost", node[:mongodb][:port],
-          :slave_ok => true, :connect_timeout => 10)
+          :slave_ok => true, :connect_timeout => 5)
       rescue
         delay = 2 ** (try + 1)
         Chef::Log.info("Failed to connect to mongodb, sleeping #{delay}, try #{try}/10")
