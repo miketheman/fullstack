@@ -222,7 +222,7 @@ node['apache']['default_modules'].each do |mod|
   include_recipe "apache2::#{recipe_name}"
 end
 
-apache_site "default" if platform?("redhat", "centos", "scientific", "fedora", "amazon")
+# apache_site "default" if platform?("redhat", "centos", "scientific", "fedora", "amazon")
 
 service "apache2" do
   action :start
