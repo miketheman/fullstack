@@ -2,7 +2,7 @@
     ServerName <%= @params[:server_name] %>
     DocumentRoot <%= @params[:docroot] %>
 
-    WSGIDaemonProcess <%= @application_name %>
+    WSGIDaemonProcess <%= @application_name %> processes=<%= node['cpu']['total'] %> display-name=%{GROUP}
     WSGIScriptAlias / <%= @params[:docroot] %>/webapp.wsgi
 
     <Directory <%= @params[:docroot] %>>
@@ -23,9 +23,5 @@
     LogLevel info
     ErrorLog <%= node['apache']['log_dir'] %>/<%= @application_name %>-error.log
     CustomLog <%= node['apache']['log_dir'] %>/<%= @application_name %>-access.log combined
-
-    RewriteEngine On
-    RewriteLog <%= node['apache']['log_dir'] %>/<%= @application_name %>-rewrite.log
-    RewriteLogLevel 0
 
 </VirtualHost>
