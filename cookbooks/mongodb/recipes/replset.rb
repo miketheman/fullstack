@@ -21,7 +21,7 @@ ruby_block "configure-replica-set" do
     require "rubygems"
     require "mongo"
 
-    if node[:mongodb][:replicaset].nil?
+    if node['mongodb']['replicaset'].nil?
       Chef::Log.warn("recipe[mongodb::replset] applied to node without mongodb.replicaset attribute, skipping")
       next
     end
@@ -32,7 +32,7 @@ ruby_block "configure-replica-set" do
     10.times do |try|
       begin
         conn = Mongo::Connection.new(
-          "localhost", node[:mongodb][:port],
+          "localhost", node['mongodb']['port'],
           :slave_ok => true, :connect_timeout => 5)
       rescue
         delay = 2 ** (try + 1)
@@ -58,7 +58,11 @@ ruby_block "configure-replica-set" do
     # leader should be if there is no set yet
     # TODO: factor out role name
     # TODO: check for chef environment
-    members = search("node", "role:mongodb-replset-member AND mongodb_replicaset:#{node[:mongodb][:replicaset]}").to_a
+    if Chef::Config[:solo]
+      Chef::Log.warn("This recipe uses search. Chef Solo does not support search.")
+    else
+      members = search("node", "role:mongodb-replset-member AND mongodb_replicaset:#{node['mongodb']['replicaset']}").to_a
+    end
     if members.index { |host| host.name == node.name }.nil?
       members << node
     end
@@ -83,7 +87,7 @@ ruby_block "configure-replica-set" do
       ismaster = cx["admin"]["$cmd"].find_one({"isMaster" => 1})
       if ismaster["ok"] == 1
         if ismaster.include?("setName") and ismaster.include?("primary")
-          leader = host if ismaster["setName"] == node[:mongodb][:replicaset] and ismaster["ismaster"] == true
+          leader = host if ismaster["setName"] == node['mongodb']['replicaset'] and ismaster["ismaster"] == true
           Chef::Log.debug("found PRIMARY, node name: #{host.name}, fqdn: #{host['fqdn']}")
         end
       end
@@ -99,7 +103,7 @@ ruby_block "configure-replica-set" do
       # Then I am the set leader!
       Chef::Log.info("Creating a new replica set")
       config = {
-        :_id => node[:mongodb][:replicaset],
+        :_id => node['mongodb']['replicaset'],
         :version => 1,
         :members => []
       }
@@ -160,7 +164,7 @@ ruby_block "configure-replica-set" do
       5.times do |try|
         begin
           conn = Mongo::Connection.new(
-            "localhost", node[:mongodb][:port],
+            "localhost", node['mongodb']['port'],
             :slave_ok => true, :connect_timeout => 5)
         rescue
           delay = 2 ** (try + 1)

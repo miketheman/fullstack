@@ -39,47 +39,47 @@ if platform?("centos", "redhat", "fedora", "amazon")
 end
 
 
-package node[:mongodb][:package_name] do
-  version node[:mongodb][:version]
+package node['mongodb']['package_name'] do
+  version node['mongodb']['version']
   action :install
 end
 
-service node[:mongodb][:service_name] do
+service node['mongodb']['service_name'] do
   supports :start => true, :stop => true, :restart => true
 end
 
 keyfile = nil
-if node[:mongodb][:keyfile_contents]
-  keyfile = "#{node[:mongodb][:dbpath]}/keyfile"
+if node['mongodb']['keyfile_contents']
+  keyfile = "#{node['mongodb']['dbpath']}/keyfile"
   file keyfile do
-    contents node[:mongodb][:keyfile_contents]
-    owner node[:mongodb][:user]
-    group node[:mongodb][:user]
+    contents node['mongodb']['keyfile_contents']
+    owner node['mongodb']['user']
+    group node['mongodb']['user']
     mode "0600"
     action :create
   end
 end
 
-template "#{node[:mongodb][:configfile]}" do
+template node['mongodb']['configfile'] do
   source "mongodb.conf.erb"
   cookbook "mongodb"
   variables(
-    :dbpath => node[:mongodb][:dbpath],
-    :logpath => node[:mongodb][:logpath],
-    :port => node[:mongodb][:port],
-    :journal => node[:mongodb][:journal],
-    :auth => node[:mongodb][:auth],
+    :dbpath => node['mongodb']['dbpath'],
+    :logpath => node['mongodb']['logpath'],
+    :port => node['mongodb']['port'],
+    :journal => node['mongodb']['journal'],
+    :auth => node['mongodb']['auth'],
     :keyfile => keyfile,
-    :nohttpinterface => node[:mongodb][:nohttpinterface],
-    :rest => node[:mongodb][:rest],
-    :replicaset => node[:mongodb][:replicaset],
+    :nohttpinterface => node['mongodb']['nohttpinterface'],
+    :rest => node['mongodb']['rest'],
+    :replicaset => node['mongodb']['replicaset'],
     :fork => platform?("centos", "redhat", "fedora", "amazon"),
-    :quiet => node[:mongodb][:quiet]
+    :quiet => node['mongodb']['quiet']
   )
   owner "root"
   group "root"
   mode "0644"
   action :create
-  notifies :restart, "service[#{node[:mongodb][:service_name]}]", :immediately
+  notifies :restart, "service[#{node['mongodb]['service_name]}]", :immediately
 end
 
