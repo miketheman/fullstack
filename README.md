@@ -81,6 +81,8 @@ Some EC2 security group work:
 A chef server (open source or hosted) must exist, and `knife.rb` must be set up correctly with AWS credentials.
 My personal one is excluded from the repo.
 
+I recommend using a dedicated server/organization since the cleanup actions are destructive.
+
     current_dir = File.dirname(__FILE__)
     log_level                :info
     log_location             STDOUT
@@ -157,6 +159,13 @@ Spiceweasel, in reverse:
     knife client bulk delete i-.*
 
 That's all, folks!
+
+Future enhancements
+===================
+* Allow for parallel spiceweasel creation - better mongodb replset creation
+* More monitoring plugins for Munin - apache2, mongo, haproxy, etc
+* Other monitoring services like ganglia, nagios, graphite
+* More tweaking of performance - figure out the right mix of power of load to web
 
 Credits
 =======
