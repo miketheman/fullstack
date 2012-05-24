@@ -22,7 +22,7 @@ override_attributes(
     'server_auth_method' => 'htpasswd'
   },
   'siege' => {
-    'concurrent' => 200
+    'concurrent' => 500
   },
   'mongodb' => {
     'rest' => true
