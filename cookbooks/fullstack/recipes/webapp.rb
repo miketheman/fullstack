@@ -61,8 +61,12 @@ end
 
 # Build our config and connection details
 mongo_hosts = []
-replset_nodes = search("node", "role:mongodb-replset-member").each do |member|
+if Chef::Config[:solo]
+  Chef::Log.warn("This recipe uses search. Chef Solo does not support search.")
+else
+  replset_nodes = search("node", "role:mongodb-replset-member").each do |member|
     mongo_hosts << "#{member['fqdn']}:27017"
+  end
 end
 Chef::Log.debug("mongo_hosts is now: #{mongo_hosts.inspect}")
 

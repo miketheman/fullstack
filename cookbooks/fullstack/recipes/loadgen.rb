@@ -24,7 +24,11 @@ directory approot do
 end
 
 # Find the laod balancer's public hostname
-lb = search(:node, "roles:load_balancer")
+if Chef::Config[:solo]
+  Chef::Log.warn("This recipe uses search. Chef Solo does not support search.")
+else
+  lb = search(:node, "roles:load_balancer")
+end
 Chef::Log.debug("LB Hostname found is: #{lb[0].ec2.public_hostname}")
 
 # Create a randomized source file for siege to consume
