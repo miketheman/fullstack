@@ -23,5 +23,8 @@ override_attributes(
   },
   'siege' => {
     'concurrent' => 200
+  },
+  'mongodb' => {
+    'rest' => true
   }
 )
