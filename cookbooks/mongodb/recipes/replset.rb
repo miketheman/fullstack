@@ -132,7 +132,7 @@ ruby_block "configure-replica-set" do
           leader['fqdn'], leader['mongodb']['port'],
           :slave_ok => true, :connect_timeout => 5)
       rescue
-        Chef::Log.warn("Could not connect to set leader on #{leader.fqdn}")
+        Chef::Log.warn("Could not connect to set leader on #{leader['fqdn']}")
         next
       end
 

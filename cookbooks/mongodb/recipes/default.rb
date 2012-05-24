@@ -7,37 +7,32 @@
 # Public Domain
 #
 
-
-if platform?("debian")
-  apt_repository "10gen" do
-    keyserver "keyserver.ubuntu.com"
-    key "7F0CEB10"
-    uri "http://downloads-distro.mongodb.org/repo/debian-sysvinit"
-    distribution "dist"
-    components ["10gen"]
-    action :add
-  end
+case node['platform']
+  when "debian"
+    apt_repository "10gen" do
+      keyserver "keyserver.ubuntu.com"
+      key "7F0CEB10"
+      uri "http://downloads-distro.mongodb.org/repo/debian-sysvinit"
+      distribution "dist"
+      components ["10gen"]
+      action :add
+    end
+  when "ubuntu"
+    apt_repository "10gen" do
+      keyserver "keyserver.ubuntu.com"
+      key "7F0CEB10"
+      uri "http://downloads-distro.mongodb.org/repo/ubuntu-upstart"
+      distribution "dist"
+      components ["10gen"]
+      action :add
+    end
+  when "centos", "redhat", "fedora", "amazon", "scientific"
+    yum_repository "10gen" do
+      description "10gen RPM Repository"
+      url "http://downloads-distro.mongodb.org/repo/redhat/os/$basearch"
+      action :add
+    end
 end
-
-if platform?("ubuntu")
-  apt_repository "10gen" do
-    keyserver "keyserver.ubuntu.com"
-    key "7F0CEB10"
-    uri "http://downloads-distro.mongodb.org/repo/ubuntu-upstart"
-    distribution "dist"
-    components ["10gen"]
-    action :add
-  end
-end
-
-if platform?("centos", "redhat", "fedora", "amazon")
-  yum_repository "10gen" do
-    description "10gen RPM Repository"
-    url "http://downloads-distro.mongodb.org/repo/redhat/os/$basearch"
-    action :add
-  end
-end
-
 
 package node['mongodb']['package_name'] do
   version node['mongodb']['version']
@@ -52,10 +47,10 @@ keyfile = nil
 if node['mongodb']['keyfile_contents']
   keyfile = "#{node['mongodb']['dbpath']}/keyfile"
   file keyfile do
-    contents node['mongodb']['keyfile_contents']
+    content node['mongodb']['keyfile_contents']
     owner node['mongodb']['user']
     group node['mongodb']['user']
-    mode "0600"
+    mode 0600
     action :create
   end
 end
@@ -80,6 +75,6 @@ template node['mongodb']['configfile'] do
   group "root"
   mode "0644"
   action :create
-  notifies :restart, "service[#{node['mongodb]['service_name]}]", :immediately
+  notifies :restart, "service[#{node['mongodb']['service_name']}]", :immediately
 end
 
