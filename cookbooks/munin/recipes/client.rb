@@ -40,3 +40,12 @@ when "arch"
     notifies :restart, "service[munin-node]"
   end
 end
+
+# Handle an annoying behavior
+directory "#{node['munin']['dbdir']}/plugin-state" do
+  owner "nobody"
+  group "munin"
+  mode 0775
+  notifies :restart, resources(:service => "munin-node")
+end
+
