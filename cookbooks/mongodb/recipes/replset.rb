@@ -133,14 +133,18 @@ ruby_block "configure-replica-set" do
       end
 
       config = cx['local']['system']['replset'].find_one()
+      max_member_id = (config["members"].map { |item| item["_id"] }).max
+
       config["version"] = config["version"] + 1
       config["members"] << {
-        :_id => (config["members"].length + 1), 
+        :_id => max_member_id + 1,
         :host => "#{node['fqdn']}:#{node['mongodb']['port']}"
       }
+      Chef::Log.debug("About to send config object: #{config.inspect}")
 
       begin
-        cx['admin']['$cmd'].find_one({"replSetReconfig" => config})
+        response = cx['admin']['$cmd'].find_one({"replSetReconfig" => config})
+        Chef::Log.debug("replSetReconfig response: #{response.inspect}")
       rescue
         # this could cause our connection to be
         # closed, and an error reported. ignore it.
