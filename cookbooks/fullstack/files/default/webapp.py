@@ -50,6 +50,11 @@ def add_perf_timings(name=None):
 def insert(name):
     doc = {'name': name}
     db.phrases.update(doc, {"$inc":{"count": 1}}, upsert=True)
+    
+    # TODO: Figure out a better place for this - some sort of setup url?
+    db.phrases.ensure_index('name')
+    db.phrases.ensure_index('count')
+    
     return json.dumps(doc, default=default)
 
 
