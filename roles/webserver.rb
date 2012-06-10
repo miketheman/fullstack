@@ -4,6 +4,7 @@ run_list("recipe[fullstack::webapp]")
 override_attributes(
   "apache" => {
     "listen_ports" => [ "8080", "443" ],
-    "mpm_binary" => "httpd.worker"
+    "mpm_binary" => "httpd.worker",
+    "ext_status" => true
   }
 )

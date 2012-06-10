@@ -11,7 +11,7 @@ include_recipe "apache2::mod_wsgi"
 include_recipe "python::pip"
 
 # Install dependencies for the webapp
-%W{ pymongo bottle }.each do |egg|
+%w{ pymongo bottle }.each do |egg|
   python_pip egg do
     action :install
   end
@@ -97,3 +97,22 @@ web_app "fullstack" do
   notifies :run, "execute[reload wsgi]"
 end
 
+# Add a munin plugins for Apache monitoring from this cookbook
+%w{
+  apache_activity
+  apache_request_rate
+}.each do |plugin_name|
+  munin_plugin plugin_name do
+    cookbook "fullstack"
+    create_file true
+  end
+end
+
+# These exist by default
+%w{
+  apache_accesses
+  apache_processes
+  apache_volume
+}.each do |plugin_name|
+  munin_plugin plugin_name
+end
