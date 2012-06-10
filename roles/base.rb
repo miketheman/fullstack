@@ -1,7 +1,7 @@
 name "base"
 description "Base role, applies to every client"
 run_list %w{
-  recipe[fullstack::ec2-epel]
+  recipe[yum::epel]
   recipe[chef-client]
   recipe[ntp]
   recipe[sudo]
