@@ -56,6 +56,7 @@ Nothing is perfect building blocks, but I tried to stay as close to the original
 * `munin` cookbook:
     * added a platform-specific template to group servers by role
     * a minor directory permissions issue that exists with the munin 1.4.6 package, fixed in 1.4.7
+    * migrated to bleeding edge of the cookbook version from github for some new features
 
 
 Prep work
@@ -145,6 +146,9 @@ Note: This is probably overly complicated, but awesome. Probably better to have 
 Kill the primary:
 
     knife ec2 server delete <instance-id from previous command>
+    # or:
+    knife ec2 server delete -y `knife search node "fqdn:`knife ssh 'role:mongodb-replset-member' -a ec2.public_hostname 'curl http://localhost:28017/replSetGetStatus?text=1' | grep -B4 PRIMARY | grep name | awk '{print $4}' |cut -f1 -d":" | sed 's/^.\{1\}//' | uniq`" -a ec2.instance_id | grep instance_id | cut -f2 -d":"`
+
 
 Do something on all nodes:
 
