@@ -18,8 +18,11 @@ cookbooks/build-essential/
 cookbooks/chef-client/
 cookbooks/haproxy/
 # cookbooks/munin/
+cookbooks/nginx
 cookbooks/ntp/
+cookbooks/ohai/
 cookbooks/python/
+cookbooks/runit/
 cookbooks/sudo/
 cookbooks/users/
 cookbooks/yum/
