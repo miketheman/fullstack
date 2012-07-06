@@ -107,8 +107,7 @@ end
     create_file true
   end
 end
-
-# These exist by default
+# These exist by default, enable them
 %w{
   apache_accesses
   apache_processes
