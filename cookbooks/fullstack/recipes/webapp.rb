@@ -115,3 +115,11 @@ end
 }.each do |plugin_name|
   munin_plugin plugin_name
 end
+# Drop a special config file for the apache plugins
+# TODO: make the entries based on apache node attributes
+template "/etc/munin/plugin-conf.d/apache" do
+  source "apache-munin-conf.erb"
+  owner "root"
+  group "root"
+  mode 0644
+end
