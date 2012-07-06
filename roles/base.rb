@@ -7,6 +7,7 @@ run_list %w{
   recipe[sudo]
   recipe[users::sysadmins]
   recipe[munin::client]
+  recipe[fullstack]
 }
 
 # override_attributes()
