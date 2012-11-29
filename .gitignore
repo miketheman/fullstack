@@ -14,6 +14,7 @@ tmp/
 # Ignoring sourced cookbooks:
 # cookbooks/apache2
 cookbooks/apt/
+cookbooks/bluepill/
 cookbooks/build-essential/
 cookbooks/chef-client/
 cookbooks/haproxy/

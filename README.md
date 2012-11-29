@@ -52,7 +52,6 @@ Nothing is perfect building blocks, but I tried to stay as close to the original
 * `apache2` cookbook:
     * added a template for default system config and attribute for prefork mode
     * commented out the behavior of creating a default site. Ref: [COOK-1257](http://tickets.opscode.com/browse/COOK-1257)
-* `bluepill` cookbook: added amazon linux platform
 * `munin` cookbook:
     * added a platform-specific template to group servers by role
     * a minor directory permissions issue that exists with the munin 1.4.6 package, fixed in 1.4.7

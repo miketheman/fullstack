@@ -18,7 +18,7 @@ cookbooks:
 - python:
   - 1.0.6
 - bluepill:
-  - 1.0.4
+  - 2.0.0
 - runit:
   - 0.15.0
 - apache2:
