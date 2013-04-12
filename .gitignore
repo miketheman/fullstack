@@ -1,6 +1,9 @@
 .rake_test_cache
 .DS_Store
 
+.ruby-version
+.ruby-gemset
+
 # Do not check in the .bundle directory, or any of the files inside it. Those files are specific to each particular machine, and are used to persist installation options between runs of the bundle install command.
 .bundle
 
