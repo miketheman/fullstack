@@ -1,37 +1,8 @@
-cookbooks:
-- apt:
-  - 1.4.2
-- yum:
-  - 0.6.0
-- build-essential:
-  - 1.0.0
-- users:
-  - 1.1.2
-- sudo:
-  - 1.1.0
-- chef-client:
-  - 1.1.2
-- ohai:
-  - 1.0.2
-- ntp:
-  - 1.1.8
-- python:
-  - 1.0.6
-- bluepill:
-  - 2.0.0
-- runit:
-  - 0.15.0
-- apache2:
-  - 1.1.8 # This is actually beyond this one, bleeding edge from github
-- haproxy:
-  - 1.0.4
-- nginx:
-  - 0.101.2
-- munin:
-  - 1.0.3
-- mongodb:
-- fullstack:
+# Welcome to Fullstack!
+# This file is consumed by spiceweasel, and will create the environment.
 
+# Resolve cookbook dependencies via Berksfile
+berksfile:
 
 roles:
 - base:
