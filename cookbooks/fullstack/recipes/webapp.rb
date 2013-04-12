@@ -96,30 +96,3 @@ web_app "fullstack" do
   docroot approot
   notifies :run, "execute[reload wsgi]"
 end
-
-# Add a munin plugins for Apache monitoring from this cookbook
-%w{
-  apache_activity
-  apache_request_rate
-}.each do |plugin_name|
-  munin_plugin plugin_name do
-    cookbook "fullstack"
-    create_file true
-  end
-end
-# These exist by default, enable them
-%w{
-  apache_accesses
-  apache_processes
-  apache_volume
-}.each do |plugin_name|
-  munin_plugin plugin_name
-end
-# Drop a special config file for the apache plugins
-# TODO: make the entries based on apache node attributes
-template "/etc/munin/plugin-conf.d/apache" do
-  source "apache-munin-conf.erb"
-  owner "root"
-  group "root"
-  mode 0644
-end

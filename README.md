@@ -15,7 +15,6 @@ Things used
 * [EC2](http://aws.amazon.com/ec2/) ([Amazon Linux AMI](http://aws.amazon.com/amazon-linux-ami/))
 * [HAProxy](http://haproxy.1wt.eu/)
 * [MongoDB](http://www.mongodb.org/) (server, [ruby](http://rubygems.org/gems/mongo) & [python](http://pypi.python.org/pypi/pymongo/) drivers)
-* [Munin](http://munin-monitoring.org/)
 * [Python](http://www.python.org/)
 * [Ruby](http://www.ruby-lang.org/)
 * [Siege](http://www.joedog.org/siege-home/)
@@ -26,7 +25,6 @@ Some of the more exotic pieces
 ------------------------------
 * bluepill is a process manager, similar to SysV init, Upstart, supervisord, runit, etc.
 * Bottle.py is a web micro-framework written in python.
-* Munin is a performance metric gathering system.
 * Siege creates web requests based on an input file for load testing.
 * Spiceweasel generates Chef's knife commands from a config file
 
@@ -48,15 +46,6 @@ A call to `/toplist` will bring back the top 10 words that have been hit.
 Customizations
 ==============
 Nothing is perfect building blocks, but I tried to stay as close to the original as possible.
-
-* `apache2` cookbook:
-    * added a template for default system config and attribute for prefork mode
-    * commented out the behavior of creating a default site. Ref: [COOK-1257](http://tickets.opscode.com/browse/COOK-1257)
-* `munin` cookbook:
-    * added a platform-specific template to group servers by role
-    * a minor directory permissions issue that exists with the munin 1.4.6 package, fixed in 1.4.7
-    * migrated to bleeding edge of the cookbook version from github for some new features
-
 
 Prep work
 =========
@@ -128,10 +117,6 @@ Get the top list of words:
 
     open http://`knife search node 'role:load_balancer' -a ec2.public_hostname |grep ec2.public_hostname | cut -f3 -d" "`/toplist
 
-Munin Monitoring web console:
-
-    open http://`knife search node 'role:monitoring' -a ec2.public_hostname |grep ec2.public_hostname | cut -f3 -d" "`
-
 HAProxy web console:
 
     open http://`knife search node 'role:load_balancer' -a ec2.public_hostname |grep ec2.public_hostname | cut -f3 -d" "`:22002/
@@ -151,7 +136,7 @@ Kill the primary:
 
 Do something on all nodes:
 
-    knife ssh '*:*' -a ec2.public_hostname 'sudo /sbin/service munin-node restart'
+    knife ssh '*:*' -a ec2.public_hostname 'hostname -f'
 
 
 Cleanup
@@ -166,8 +151,6 @@ That's all, folks!
 Future enhancements
 ===================
 * Allow for parallel spiceweasel creation - better mongodb replset creation
-* More monitoring plugins for Munin - apache2, mongo, haproxy, etc
-* Other monitoring services like ganglia, nagios, graphite
 * More tweaking of performance - figure out the right mix of power of load to web
 
 Credits

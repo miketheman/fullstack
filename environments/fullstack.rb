@@ -18,9 +18,6 @@ override_attributes(
   'haproxy' => {
     'member_max_connections' => 1000
   },
-  'munin' => { 
-    'server_auth_method' => 'htpasswd'
-  },
   'siege' => {
     'concurrent' => 500
   },
