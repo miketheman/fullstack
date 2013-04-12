@@ -1,12 +1,12 @@
 name "fullstack"
 description "My FullStack environment"
 
-override_attributes( 
+override_attributes(
   'chef_client' => {
     'init_style' => "init",
     'interval' => 180, # => 3 minutes for the demo, not realistic in prod
     'server_url' => "https://api.opscode.com/organizations/fullstack",
-    'validation_client_name' => "fullstack-validator"    
+    'validation_client_name' => "fullstack-validator"
   },
   'authorization' => {
     'sudo' => {
