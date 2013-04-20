@@ -2,16 +2,22 @@
 # Cookbook Name:: fullstack
 # Recipe:: webapp
 #
-# Copyright 2012, Mike Fiedler
+# Copyright 2012-2013, Mike Fiedler
 #
 # All rights reserved - Do Not Redistribute
 #
 
+include_recipe "apache2::default"
 include_recipe "apache2::mod_wsgi"
+include_recipe "datadog"
 include_recipe "python::pip"
 
 # Install dependencies for the webapp
-%w{ pymongo bottle }.each do |egg|
+%w{
+  bottle
+  dogstatsd-python
+  pymongo
+}.each do |egg|
   python_pip egg do
     action :install
   end
@@ -95,4 +101,11 @@ web_app "fullstack" do
   template "fullstack_apache.conf.erb"
   docroot approot
   notifies :run, "execute[reload wsgi]"
+end
+
+# Drop a configuration file for the agent
+template '/etc/dd-agent/conf.d/apache.yaml' do
+  owner 'dd-agent'
+  mode 00644
+  notifies :restart, "service[datadog-agent]"
 end
