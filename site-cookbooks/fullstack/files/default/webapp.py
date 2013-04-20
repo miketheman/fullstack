@@ -5,8 +5,7 @@ It leverages the bottle micro-framework, as well as pymongo.
 '''
 
 import time
-from functools import wraps
-from bottle import route, run, response, request
+from bottle import route, run, response, request, template
 from bson.json_util import default
 import pymongo
 from pymongo.uri_parser import parse_uri
@@ -42,7 +41,6 @@ def insert(name):
 
     return json.dumps(doc, default=default)
 
-
 @route('/get')
 @route('/get/:name')
 @statsd.timed('fullstack.get.time', sample_rate=0.5)
@@ -63,10 +61,8 @@ def toplist(name=None):
     db.phrases.ensure_index('count')
 
     query = db.phrases.find({}, ['count', 'name']).sort('count', -1).limit(10)
-    
-    response.set_header('Content-Type', 'application/json')
-    return json.dumps(list(query), default=default)
 
+    return template('toplist', toplist=list(query))
 
 # This is because I hate seeing errors for no reason.
 @route('/favicon.ico')

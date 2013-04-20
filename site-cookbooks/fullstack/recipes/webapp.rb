@@ -56,12 +56,18 @@ end
 # This is the actual application.
 # It could probably live in a repo somewhere, and be deployed via `deploy`, but
 # since this app is very simplistic, I am deploying directly.
-cookbook_file "#{approot}/webapp.py" do
-  source "webapp.py"
-  owner "root"
-  group "root"
-  mode 0755
-  notifies :run, "execute[reload wsgi]"
+%w{
+  webapp.py
+  layout.tpl
+  toplist.tpl
+}.each do |appfile|
+  cookbook_file "#{approot}/#{appfile}" do
+    source appfile
+    owner "root"
+    group "root"
+    mode 0755
+    notifies :run, "execute[reload wsgi]"
+  end
 end
 
 # Build our config and connection details
