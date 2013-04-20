@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: fullstack
-# Recipe:: loadgen
+# Recipe:: load_gen
 #
-# Copyright 2012, Mike Fiedler
+# Copyright 2012-2013, Mike Fiedler
 #
 # All rights reserved - Do Not Redistribute
 #
@@ -40,7 +40,7 @@ import random
 words = [x.strip() for x in file('/usr/share/dict/words') if x.strip()]
 with file('#{approot}/urls.txt', 'w') as outfile:
     for word in random.sample(words, 50000):
-        outfile.write("http://#{lb[0].ec2.public_hostname}/insert/%s\\n" % word)
+        outfile.write("http://#{lb.ec2.public_hostname}/insert/%s\\n" % word)
   EOH
   not_if do
     File.exists?("#{approot}/urls.txt")
@@ -50,12 +50,14 @@ end
 # Start a siege against the webapp, background the process
 # This is simply to link the correct binary, due to Omnibus
 link "/usr/bin/bluepill" do
-  to "/opt/opscode/embedded/bin/bluepill"
+  to "/opt/chef/embedded/bin/bluepill"
 end
 
 template "/etc/bluepill/siege.pill" do
   source "siege.pill.erb"
-  variables(:approot => approot)
+  variables(
+    :approot => approot,
+  )
 end
 
 bluepill_service "siege" do
