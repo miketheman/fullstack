@@ -11,6 +11,7 @@ from bson.json_util import default
 import pymongo
 from pymongo.uri_parser import parse_uri
 import json
+from statsd import statsd
 
 try:
     import local_settings as config
@@ -29,24 +30,8 @@ else:
 
 db = conn.test
 
-def add_perf_timings(name=None):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            start = time.time()
-            rv = func(*args, **kwargs)
-            end = time.time()
-            # TODO: Ship this off to somewhere else - statsd, graphite, etc
-            # db.request_took.insert(
-            #       {'path': name or request.path, 'seconds': (end - start)})
-            response.set_header('X-Took-Seconds', (end - start))
-            return rv
-        return wrapper
-    return decorator
-
-
 @route('/insert/:name')
-@add_perf_timings(name='record insert')
+@statsd.timed('fullstack.insert.time', sample_rate=0.5)
 def insert(name):
     doc = {'name': name}
     db.phrases.update(doc, {"$inc":{"count": 1}}, upsert=True)
@@ -60,7 +45,7 @@ def insert(name):
 
 @route('/get')
 @route('/get/:name')
-@add_perf_timings(name='record get')
+@statsd.timed('fullstack.get.time', sample_rate=0.5)
 def get(name=None):
     query = {}
     if name is not None:
@@ -70,7 +55,7 @@ def get(name=None):
     return json.dumps(list(db.phrases.find(query)), default=default)
 
 @route('/toplist')
-@add_perf_timings(name='top records list')
+@statsd.timed('fullstack.toplist.time', sample_rate=0.5)
 def toplist(name=None):
 
     # TODO: Figure out a better place for this - some sort of setup url?
