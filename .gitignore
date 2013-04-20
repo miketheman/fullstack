@@ -10,6 +10,11 @@
 # Secret credential directories:
 .aws/
 .chef/
+data_bags/credentials/
 data_bags/users/miketheman.json
 
 tmp/
+Berksfile.lock
+
+set-env.sh
+.pyc
