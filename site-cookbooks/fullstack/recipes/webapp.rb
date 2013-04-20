@@ -64,7 +64,6 @@ cookbook_file "#{approot}/webapp.py" do
   notifies :run, "execute[reload wsgi]"
 end
 
-
 # Build our config and connection details
 mongo_hosts = []
 if Chef::Config[:solo]
@@ -77,9 +76,9 @@ end
 Chef::Log.debug("mongo_hosts is now: #{mongo_hosts.inspect}")
 
 if !mongo_hosts.empty?
-    mongo_uri = "mongodb://#{mongo_hosts.join(',')}/?replicaSet=fullstack"
+  mongo_uri = "mongodb://#{mongo_hosts.join(',')}/?replicaSet=fullstack"
 else
-    mongo_uri = "mongodb://localhost/"
+  mongo_uri = "mongodb://localhost/"
 end
 Chef::Log.debug("mongo_uri is now: #{mongo_uri}")
 
@@ -93,7 +92,7 @@ template "#{approot}/local_settings.py" do
     :mongo_uri => mongo_uri
   )
   notifies :run, "execute[reload wsgi]"
-end  
+end
 
 web_app "fullstack" do
   server_name node['hostname']

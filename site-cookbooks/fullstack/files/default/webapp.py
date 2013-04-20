@@ -19,7 +19,7 @@ except ImportError:
     # directly to mongo on localhost
     class config(object):
         mongo_uri = 'mongodb://localhost'
-        
+
 mongo_uri = getattr(config, 'mongo_uri', 'mongodb://localhost')
 uri_components = parse_uri(mongo_uri)
 if 'replicaSet' in uri_components['options']:
@@ -50,11 +50,11 @@ def add_perf_timings(name=None):
 def insert(name):
     doc = {'name': name}
     db.phrases.update(doc, {"$inc":{"count": 1}}, upsert=True)
-    
+
     # TODO: Figure out a better place for this - some sort of setup url?
     db.phrases.ensure_index('name')
     db.phrases.ensure_index('count')
-    
+
     return json.dumps(doc, default=default)
 
 
@@ -65,18 +65,18 @@ def get(name=None):
     query = {}
     if name is not None:
         query['name'] = name
-        
+
     response.set_header('Content-Type', 'application/json')
     return json.dumps(list(db.phrases.find(query)), default=default)
 
 @route('/toplist')
 @add_perf_timings(name='top records list')
 def toplist(name=None):
-    
+
     # TODO: Figure out a better place for this - some sort of setup url?
     db.phrases.ensure_index('name')
     db.phrases.ensure_index('count')
-    
+
     query = db.phrases.find({}, ['count', 'name']).sort('count', -1).limit(10)
     
     response.set_header('Content-Type', 'application/json')
