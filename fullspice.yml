@@ -15,32 +15,39 @@ roles:
 environments:
 - fullstack:
 
+
 data bags:
   - users:
-    - miketheman
+      items:
+      - "miketheman"
+  - credentials:
+      items:
+      - "datadog"
 
-nodes:
-# stats tracker
-- ec2 1:
-  - role[base] role[monitoring]
-  - -Z us-east-1a -I ami-e565ba8c -G fullstack -S aws-test-dev -i .aws/aws-test-dev.pem -x ec2-user -d chef-full -E fullstack -f m1.small
 
-# database nodes, replset
-- ec2 3:
-  - role[base] role[mongodb-replset-member]
-  - -Z us-east-1a -I ami-e565ba8c -G fullstack -S aws-test-dev -i .aws/aws-test-dev.pem -x ec2-user -d chef-full -E fullstack -f m1.large
+clusters:
+- amazon:
 
-# webapp nodes
-- ec2 2:
-  - role[base] role[webserver]
-  - -Z us-east-1a -I ami-e565ba8c -G fullstack -S aws-test-dev -i .aws/aws-test-dev.pem -x ec2-user -d chef-full -E fullstack -f m1.large
+  # database nodes, replset
+  - ec2 3:
+      run_list: role[base] role[mongodb-replset-member]
+      options: -Z us-east-1a -I ami-fc75ee95 -G fullstack -S miketheman -i .aws/miketheman.pem -x ec2-user -d chef-full -E fullstack -f c1.medium
 
-# load balancer
-- ec2 1:
-  - role[base] role[load_balancer]
-  - -Z us-east-1a -I ami-e565ba8c -G fullstack -S aws-test-dev -i .aws/aws-test-dev.pem -x ec2-user -d chef-full -E fullstack -f m1.large
+  # webapp nodes
+  - ec2 2:
+      run_list: role[base] role[webserver]
+      options: -Z us-east-1a -I ami-fc75ee95 -G fullstack -S miketheman -i .aws/miketheman.pem -x ec2-user -d chef-full -E fullstack -f c1.medium
 
-# client load simulator
-- ec2 2:
-  - role[base] role[load_gen]
-  - -Z us-east-1a -I ami-e565ba8c -G fullstack -S aws-test-dev -i .aws/aws-test-dev.pem -x ec2-user -d chef-full -E fullstack -f m1.large
+  # load balancer
+  - ec2 1:
+      run_list: role[base] role[load_balancer]
+      options: -Z us-east-1a -I ami-fc75ee95 -G fullstack -S miketheman -i .aws/miketheman.pem -x ec2-user -d chef-full -E fullstack -f m1.small
+
+  # client load simulator
+  - ec2 2:
+      run_list: role[base] role[load_gen]
+      options: -Z us-east-1a -I ami-fc75ee95 -G fullstack -S miketheman -i .aws/miketheman.pem -x ec2-user -d chef-full -E fullstack -f m1.small
+
+# In the name of cost effectiveness, I am using an Instance Store-backed AMI
+# (ami-04cf5c6d) instead of a production-style EBS-backed AMI (ami-54cf5c3d).
+# ami-fc75ee95 ami-3275ee5b
