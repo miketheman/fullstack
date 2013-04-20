@@ -44,7 +44,9 @@ template "#{approot}/webapp.wsgi" do
   owner "root"
   group "root"
   mode 0755
-  variables( :approot => approot )
+  variables(
+    :approot => approot,
+  )
 end
 
 # Define a WSGI reload resource
@@ -94,8 +96,7 @@ template "#{approot}/local_settings.py" do
   group "root"
   mode 0755
   variables(
-    :mongo_replset_name => "fullstack",
-    :mongo_uri => mongo_uri
+    :mongo_uri => mongo_uri,
   )
   notifies :run, "execute[reload wsgi]"
 end
