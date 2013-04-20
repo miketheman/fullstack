@@ -12,6 +12,7 @@ Things used
 * [bluepill](https://github.com/arya/bluepill)
 * [Bottle.py](http://bottlepy.org/)
 * [Chef](http://www.opscode.com/chef/) (chef-client, ohai, knife)
+* [Datadog](http://www.datadog.com/)
 * [EC2](http://aws.amazon.com/ec2/) ([Amazon Linux AMI](http://aws.amazon.com/amazon-linux-ami/))
 * [HAProxy](http://haproxy.1wt.eu/)
 * [MongoDB](http://www.mongodb.org/) (server, [ruby](http://rubygems.org/gems/mongo) & [python](http://pypi.python.org/pypi/pymongo/) drivers)
@@ -38,31 +39,31 @@ Thanks to [diagrammr](http://www.diagrammr.com/).
 Application
 -----------
 The Bottle.py application is a simplistic word counter, acts like a REST interface, where `/insert/<someword>` will add the word to the database and increment its counter.
-    
+
 The `/get/<someword>` will retrieve the word, the unique object ID, and the count of times this word was hit.
 
 A call to `/toplist` will bring back the top 10 words that have been hit.
 
 Customizations
 ==============
-Nothing is perfect building blocks, but I tried to stay as close to the original as possible.
+All cookbooks used are released on the Chef Community site.
+The only cookbooks here are a personalized `mongodb` cookbook, due to a currently faulty community cookbook, and the `fullstack` cookbook, that performs the customized functions this stack needs.
 
 Prep work
 =========
 
 Some EC2 security group work:
 
-    ec2-create-group fullstack -d "Full-stack demo"
-    # Allow
+    ec2-create-group fullstack -d "Full Stack Demo"
+    # Allow pings
     ec2-authorize fullstack --protocol icmp --icmp-type-code=-1:-1 --source-or-dest-group fullstack
-    # Could be shorter:
-    # ec2-authorize fullstack -P icmp -t=-1:-1 -o fullstack
+    # Could be shorter: ec2-authorize fullstack -P icmp -t=-1:-1 -o fullstack
     ec2-authorize fullstack -P tcp -p 0-65535 -o fullstack
     ec2-authorize fullstack -P udp -p 0-65535 -o fullstack
 
     ec2-authorize fullstack -P tcp -p 22    # SSH
     ec2-authorize fullstack -P tcp -p 80    # HTTP
-    
+
     # Optional, don't use in a production environment unless needed
     ec2-authorize fullstack -P tcp -p 22002 # HAProxy Stats
     ec2-authorize fullstack -P tcp -p 8080  # Webapp node
@@ -82,7 +83,7 @@ I recommend using a dedicated server/organization since the cleanup actions are 
     chef_server_url          "https://api.opscode.com/organizations/<organization-name>"
     cache_type               'BasicFile'
     cache_options( :path => "#{ENV['HOME']}/.chef/checksums" )
-    cookbook_path            ["#{current_dir}/../cookbooks"]
+    cookbook_path            ["#{current_dir}/../site-cookbooks"]
     # AWS credentials
     knife[:ssh_user]              = "ec2-user"
     knife[:ssh_identity_file]     = "#{current_dir}/../.aws/<key pair cert>.pem"
@@ -91,7 +92,7 @@ I recommend using a dedicated server/organization since the cleanup actions are 
     ### END ###
 
 A Users Databag item must be placed in `data_bags/users/<username>.json`. An example is:
-    
+
     {
       "id": "bofh",
       "ssh_keys": "ssh-rsa AAAAB3Nz...yhCw== bofh",
@@ -99,10 +100,18 @@ A Users Databag item must be placed in `data_bags/users/<username>.json`. An exa
       "uid": 2001,
       "shell": "\/bin\/bash",
       "comment": "BOFH",
-      "openid": "bofh.myopenid.com"
     }
-    
+
 See the [users cookbook](http://community.opscode.com/cookbooks/users) for more help.
+
+A Credentials databag item for Datadog monitoring is also excluded from the repo, since it contains API keys.
+Construct your own at `data_bags/credentials/datadog.json` so:
+
+    {
+      "id": "datadog",
+      "api_key": "YOURAPIKEY",
+      "application_key": "APPLICATIONKEYFORCHEF"
+    }
 
 Launch
 ======
@@ -115,24 +124,35 @@ Some cool tricks
 
 Get the top list of words:
 
-    open http://`knife search node 'role:load_balancer' -a ec2.public_hostname |grep ec2.public_hostname | cut -f3 -d" "`/toplist
+    open http://`knife search node 'role:load_balancer' -a ec2.public_hostname |grep ec2.public_hostname | cut -f4 -d" "`/toplist
 
 HAProxy web console:
 
-    open http://`knife search node 'role:load_balancer' -a ec2.public_hostname |grep ec2.public_hostname | cut -f3 -d" "`:22002/
+    open http://`knife search node 'role:load_balancer' -a ec2.public_hostname |grep ec2.public_hostname | cut -f4 -d" "`:22002/
 
 Find the mongodb replset primary:
 
-    knife search node "fqdn:`knife ssh 'role:mongodb-replset-member' -a ec2.public_hostname 'curl http://localhost:28017/replSetGetStatus?text=1' | grep -B4 PRIMARY | grep name | awk '{print $4}' |cut -f1 -d":" | sed 's/^.\{1\}//' | uniq`" -a ec2
+    knife search node "fqdn:`knife ssh 'role:mongodb-replset-member' -a ec2.public_hostname 'curl http://localhost:28017/replSetGetStatus?text=1' | grep -B4 PRIMARY | grep name | awk '{print $4}' |cut -f1 -d":" | sed 's/^.\{1\}//' | uniq`" -i
 
-Note: This is probably overly complicated, but awesome. Probably better to have chef-client update the node record with the current state.
+NOTE: This is probably overly complicated, but awesome. Probably better to have chef-client update the node record with the current state.
 
 Kill the primary:
 
-    knife ec2 server delete <instance-id from previous command>
+    knife ec2 server delete --purge -y <instance-id from previous command>
     # or:
-    knife ec2 server delete -y `knife search node "fqdn:`knife ssh 'role:mongodb-replset-member' -a ec2.public_hostname 'curl http://localhost:28017/replSetGetStatus?text=1' | grep -B4 PRIMARY | grep name | awk '{print $4}' |cut -f1 -d":" | sed 's/^.\{1\}//' | uniq`" -a ec2.instance_id | grep instance_id | cut -f2 -d":"`
+    knife ec2 server delete --purge -y `knife search node "fqdn:`knife ssh 'role:mongodb-replset-member' -a ec2.public_hostname 'curl http://localhost:28017/replSetGetStatus?text=1' | grep -B4 PRIMARY | grep name | awk '{print $4}' |cut -f1 -d":" | sed 's/^.\{1\}//' | uniq`" -a ec2.instance_id | grep instance_id | cut -f2 -d":"`
 
+Launch a new mongodb replica:
+
+    spiceweasel fullspice.yml | grep --color=none rolemongodb-replset-member | uniq | bash
+
+Add a webserver:
+
+    spiceweasel fullspice.yml | grep --color=none rolewebserver | uniq | bash
+
+Show counts of servers:
+
+    knife status -r | awk '{print $9}' | sort | uniq -c
 
 Do something on all nodes:
 
@@ -148,12 +168,7 @@ Spiceweasel, in reverse:
 
 That's all, folks!
 
-Future enhancements
-===================
-* Allow for parallel spiceweasel creation - better mongodb replset creation
-* More tweaking of performance - figure out the right mix of power of load to web
-
 Credits
 =======
 * [Mike Fiedler](https://github.com/miketheman)
-* [Daniel Crosta](https://github.com/dcrosta)
+* [Daniel Crosta](https://github.com/dcrosta) - huge help getting this going
