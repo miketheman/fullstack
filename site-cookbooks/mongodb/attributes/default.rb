@@ -38,4 +38,3 @@ default['mongodb']['auth'] = false
 # replica set (and will imply node['mongodb']['auth'] = true,
 # even if you do not explicitly set it)
 default['mongodb']['keyfile_contents'] = nil
-

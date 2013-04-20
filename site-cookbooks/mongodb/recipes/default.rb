@@ -2,36 +2,36 @@
 # Cookbook Name:: mongodb
 # Recipe:: default
 #
-# Copyright 2012, Dan Crosta
+# Copyright 2012-2013, Dan Crosta
 #
 # Public Domain
 #
 
 case node['platform']
-  when "debian"
-    apt_repository "10gen" do
-      keyserver "keyserver.ubuntu.com"
-      key "7F0CEB10"
-      uri "http://downloads-distro.mongodb.org/repo/debian-sysvinit"
-      distribution "dist"
-      components ["10gen"]
-      action :add
-    end
-  when "ubuntu"
-    apt_repository "10gen" do
-      keyserver "keyserver.ubuntu.com"
-      key "7F0CEB10"
-      uri "http://downloads-distro.mongodb.org/repo/ubuntu-upstart"
-      distribution "dist"
-      components ["10gen"]
-      action :add
-    end
-  when "centos", "redhat", "fedora", "amazon", "scientific"
-    yum_repository "10gen" do
-      description "10gen RPM Repository"
-      url "http://downloads-distro.mongodb.org/repo/redhat/os/$basearch"
-      action :add
-    end
+when "debian"
+  apt_repository "10gen" do
+    keyserver "keyserver.ubuntu.com"
+    key "7F0CEB10"
+    uri "http://downloads-distro.mongodb.org/repo/debian-sysvinit"
+    distribution "dist"
+    components ["10gen"]
+    action :add
+  end
+when "ubuntu"
+  apt_repository "10gen" do
+    keyserver "keyserver.ubuntu.com"
+    key "7F0CEB10"
+    uri "http://downloads-distro.mongodb.org/repo/ubuntu-upstart"
+    distribution "dist"
+    components ["10gen"]
+    action :add
+  end
+when "centos", "redhat", "fedora", "amazon", "scientific"
+  yum_repository "10gen" do
+    description "10gen RPM Repository"
+    url "http://downloads-distro.mongodb.org/repo/redhat/os/$basearch"
+    action :add
+  end
 end
 
 package node['mongodb']['package_name'] do
@@ -77,4 +77,3 @@ template node['mongodb']['configfile'] do
   action :create
   notifies :restart, "service[#{node['mongodb']['service_name']}]", :immediately
 end
-

@@ -2,19 +2,14 @@
 # Cookbook Name:: mongodb
 # Recipe:: replset
 #
-# Copyright 2012, Dan Crosta
+# Copyright 2012-2013, Dan Crosta
 #
 # Public Domain
 #
 
 include_recipe "mongodb"
 
-# This needs chef 0.10.10, not included in omnibus installer yet.
-# chef_gem "mongo"
-gem_package "mongo" do
-  action :install
-end.run_action(:install)
-Gem.clear_paths
+chef_gem "mongo"
 
 ruby_block "configure-replica-set" do
   block do
@@ -26,7 +21,7 @@ ruby_block "configure-replica-set" do
       next
     end
 
-    # Retry 5 times, as we believe that there should
+    # Retry 10 times, as we believe that there should
     # be a mongod accepting connections on localhost
     conn = nil
     10.times do |try|
@@ -66,7 +61,7 @@ ruby_block "configure-replica-set" do
     if members.index { |host| host.name == node.name }.nil?
       members << node
     end
-    members.sort! { |a,b| a.name <=> b.name }
+    members.sort! { |a, b| a.name <=> b.name }
     Chef::Log.debug("Members found from search: #{members}")
 
     # The leader is the first member of the search
@@ -124,6 +119,18 @@ ruby_block "configure-replica-set" do
         Chef::Log.warn("---------")
         Chef::Log.warn("Manual intervention may be necessary.")
       end
+
+      sleep 60 # => wait for the replSet to complete initiation
+
+      Chef::Log.debug("Adding a datadog user for monitoring")
+      response = conn["admin"].add_user("datadog", "hc9dGVYtu96UNwMXu8xZbA4R")
+      if response["ok"] != 0
+        Chef::Log.warn("Something went wrong with adding datadog user:")
+        Chef::Log.warn(response)
+        Chef::Log.warn("---------")
+      end
+
+      Chef::Log.info("MongoDB replSet has been initiated.")
 
     elsif rsstatus.include?("startupStatus") and rsstatus["startupStatus"] == 3
       Chef::Log.info("Adding #{node} to replica set")
