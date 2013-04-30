@@ -31,22 +31,22 @@ clusters:
   # database nodes, replset
   - ec2 3:
       run_list: role[base] role[mongodb-replset-member]
-      options: -Z us-east-1a -I ami-fc75ee95 -G fullstack -S miketheman -i .aws/miketheman.pem -x ec2-user -d chef-full -E fullstack -f c1.medium
+      options: -Z us-east-1a -I ami-fc75ee95 -G fullstack -S miketheman -i .aws/miketheman.pem -x ec2-user -d chef-full -E fullstack -f c1.medium --bootstrap-version 11.4.0
 
   # webapp nodes
   - ec2 2:
       run_list: role[base] role[webserver]
-      options: -Z us-east-1a -I ami-fc75ee95 -G fullstack -S miketheman -i .aws/miketheman.pem -x ec2-user -d chef-full -E fullstack -f c1.medium
+      options: -Z us-east-1a -I ami-fc75ee95 -G fullstack -S miketheman -i .aws/miketheman.pem -x ec2-user -d chef-full -E fullstack -f c1.medium --bootstrap-version 11.4.0
 
   # load balancer
   - ec2 1:
       run_list: role[base] role[load_balancer]
-      options: -Z us-east-1a -I ami-fc75ee95 -G fullstack -S miketheman -i .aws/miketheman.pem -x ec2-user -d chef-full -E fullstack -f m1.small
+      options: -Z us-east-1a -I ami-fc75ee95 -G fullstack -S miketheman -i .aws/miketheman.pem -x ec2-user -d chef-full -E fullstack -f m1.small --bootstrap-version 11.4.0
 
   # client load simulator
   - ec2 2:
       run_list: role[base] role[load_gen]
-      options: -Z us-east-1a -I ami-fc75ee95 -G fullstack -S miketheman -i .aws/miketheman.pem -x ec2-user -d chef-full -E fullstack -f m1.small
+      options: -Z us-east-1a -I ami-fc75ee95 -G fullstack -S miketheman -i .aws/miketheman.pem -x ec2-user -d chef-full -E fullstack -f m1.small --bootstrap-version 11.4.0
 
 # In the name of cost effectiveness, I am using an Instance Store-backed AMI
 # (ami-04cf5c6d) instead of a production-style EBS-backed AMI (ami-54cf5c3d).
