@@ -113,6 +113,8 @@ Construct your own at `data_bags/credentials/datadog.json` so:
       "application_key": "APPLICATIONKEYFORCHEF"
     }
 
+You can obtain your API key and Application Key from the Integrations => API page, or from the Agent Setup => Chef page, you will find a "Generate Application Key" button.
+
 Launch
 ======
 
