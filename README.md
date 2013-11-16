@@ -174,3 +174,7 @@ Credits
 =======
 * [Mike Fiedler](https://github.com/miketheman)
 * [Daniel Crosta](https://github.com/dcrosta) - huge help getting this going
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/miketheman/fullstack/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
